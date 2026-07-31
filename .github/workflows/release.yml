@@ -1,0 +1,63 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+
+      - name: Build binaries
+        run: |
+          GOARCH=arm64 go build -ldflags "-X main.version=${{ github.ref_name }}" -o coffee-darwin-arm64 .
+          GOARCH=amd64 go build -ldflags "-X main.version=${{ github.ref_name }}" -o coffee-darwin-amd64 .
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            coffee-darwin-arm64
+            coffee-darwin-amd64
+
+      - name: Update Homebrew tap
+        env:
+          TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          set -eu
+
+          if [ -z "$TAP_TOKEN" ]; then
+            echo "::error::HOMEBREW_TAP_TOKEN secret is not set — see README for setup steps. Skipping tap update; update mrthiti/homebrew-coffee manually for this release."
+            exit 1
+          fi
+
+          version="${GITHUB_REF_NAME#v}"
+          arm_sha256="$(shasum -a 256 coffee-darwin-arm64 | cut -d' ' -f1)"
+          intel_sha256="$(shasum -a 256 coffee-darwin-amd64 | cut -d' ' -f1)"
+
+          git clone --depth=1 "https://x-access-token:${TAP_TOKEN}@github.com/mrthiti/homebrew-coffee.git" tap
+
+          sed -i '' "s/^  version \".*\"/  version \"$version\"/" tap/Casks/coffee.rb
+          sed -i '' "s/^  arm_sha256   = \".*\"/  arm_sha256   = \"$arm_sha256\"/" tap/Casks/coffee.rb
+          sed -i '' "s/^  intel_sha256 = \".*\"/  intel_sha256 = \"$intel_sha256\"/" tap/Casks/coffee.rb
+
+          cd tap
+          if git diff --quiet Casks/coffee.rb; then
+            echo "Casks/coffee.rb already up to date, nothing to commit."
+            exit 0
+          fi
+
+          git config user.name "Thiti Yamsung"
+          git config user.email "mr.thiti@icloud.com"
+          git add Casks/coffee.rb
+          git commit -m "Update coffee Cask to ${GITHUB_REF_NAME}"
+          git push origin main
