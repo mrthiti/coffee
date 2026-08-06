@@ -56,8 +56,8 @@ jobs:
             exit 0
           fi
 
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "Thiti Yamsung"
+          git config user.email "mr.thiti@icloud.com"
           git add Casks/coffee.rb
           git commit -m "Update coffee Cask to ${GITHUB_REF_NAME}"
           git push origin main
