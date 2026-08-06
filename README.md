@@ -8,7 +8,7 @@ Keep your Mac awake even though you close the lid of your Mac, `coffee` toggles 
 ### Homebrew
 
 ```sh
-brew tap mrthiti/coffee https://github.com/mrthiti/coffee
+brew tap mrthiti/coffee
 brew install --cask coffee
 ```
 
@@ -19,6 +19,9 @@ your Homebrew `bin`. It also sets up the same passwordless-sudo rule as
 `install.sh` (you may be prompted for your password once during install),
 so plain `coffee` just works afterward. `brew uninstall --cask coffee`
 removes that sudoers rule again automatically.
+
+The Cask itself lives in [mrthiti/homebrew-coffee](https://github.com/mrthiti/homebrew-coffee)
+and is kept in sync automatically whenever a new release is tagged here.
 
 ### install.sh
 
@@ -103,6 +106,21 @@ git clone https://github.com/mrthiti/coffee.git
 cd coffee
 go build -o coffee .
 ```
+
+## Releasing (maintainers)
+
+Push a tag matching `v*` (e.g. `git tag v1.1.0 && git push origin v1.1.0`).
+`.github/workflows/release.yml` builds both binaries, publishes them as a
+GitHub Release, and pushes an updated `Casks/coffee.rb` to
+[mrthiti/homebrew-coffee](https://github.com/mrthiti/homebrew-coffee) —
+cutting the tag is the only manual step.
+
+That last part needs a one-time setup: a fine-grained [Personal Access
+Token](https://github.com/settings/personal-access-tokens) scoped to just
+the `homebrew-coffee` repo with **Contents: Read and write**, saved as a
+repository secret named `HOMEBREW_TAP_TOKEN` on this repo (Settings →
+Secrets and variables → Actions). Without it, the tap-update step fails
+loudly and the Cask has to be updated by hand.
 
 ## License
 
