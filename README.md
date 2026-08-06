@@ -9,13 +9,16 @@ Keep your Mac awake even though you close the lid of your Mac, `coffee` toggles 
 
 ```sh
 brew tap mrthiti/coffee https://github.com/mrthiti/coffee
-brew install coffee
+brew install --cask coffee
 ```
 
-This builds `coffee` from source (requires Xcode Command Line Tools, which
-Homebrew already needs) and installs it to your Homebrew `bin`. Homebrew
-doesn't set up the passwordless-sudo rule that `install.sh` does, so run
-`sudo coffee` unless you add the sudoers rule yourself — see "Usage" below.
+This downloads the prebuilt binary for your Mac (Apple Silicon or Intel)
+from the same [GitHub Releases](https://github.com/mrthiti/coffee/releases)
+used by `install.sh` — no Go or build step required — and installs it to
+your Homebrew `bin`. It also sets up the same passwordless-sudo rule as
+`install.sh` (you may be prompted for your password once during install),
+so plain `coffee` just works afterward. `brew uninstall --cask coffee`
+removes that sudoers rule again automatically.
 
 ### install.sh
 
@@ -42,6 +45,16 @@ release. Run `coffee --version` before and after to confirm it updated.
 
 ## Uninstall
 
+If you installed via Homebrew:
+
+```sh
+brew uninstall --cask coffee
+```
+
+This removes the binary and the sudoers rule automatically.
+
+If you installed via `install.sh` or built from source:
+
 ```sh
 sudo pmset -a disablesleep 0
 sudo rm /usr/local/bin/coffee /etc/sudoers.d/coffee
@@ -65,10 +78,11 @@ coffee --help         Show this help message.
 coffee --version      Show the installed version.
 ```
 
-install.sh (see "Install" above) sets up passwordless sudo for you, so
-plain `coffee` normally just works. If you built from source instead and
-want the same thing, add this to a file under `/etc/sudoers.d/` yourself
-(validate with `visudo -c -f <file>` before it takes effect):
+Both Homebrew and install.sh (see "Install" above) set up passwordless
+sudo for you, so plain `coffee` normally just works. If you built from
+source instead and want the same thing, add this to a file under
+`/etc/sudoers.d/` yourself (validate with `visudo -c -f <file>` before it
+takes effect):
 
 ```
 <your-username> ALL=(root) NOPASSWD: /usr/bin/pmset -a disablesleep 0, /usr/bin/pmset -a disablesleep 1
