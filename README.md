@@ -5,6 +5,20 @@ Keep your Mac awake even though you close the lid of your Mac, `coffee` toggles 
 
 ## Install
 
+### Homebrew
+
+```sh
+brew tap mrthiti/coffee https://github.com/mrthiti/coffee
+brew install coffee
+```
+
+This builds `coffee` from source (requires Xcode Command Line Tools, which
+Homebrew already needs) and installs it to your Homebrew `bin`. Homebrew
+doesn't set up the passwordless-sudo rule that `install.sh` does, so run
+`sudo coffee` unless you add the sudoers rule yourself — see "Usage" below.
+
+### install.sh
+
 ```sh
 curl -fsSL https://raw.githubusercontent.com/mrthiti/coffee/main/install.sh | sh
 ```
@@ -75,3 +89,7 @@ git clone https://github.com/mrthiti/coffee.git
 cd coffee
 go build -o coffee .
 ```
+
+## License
+
+[MIT](LICENSE)
