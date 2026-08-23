@@ -76,6 +76,9 @@ coffee                Run in the foreground: enables sleep prevention and
                       keeps re-checking it (macOS can silently reset it,
                       e.g. when switching between AC and battery power),
                       then disables it again on exit (press Ctrl+C to stop).
+coffee timeout <dur>  Same as plain "coffee", but shows a live countdown
+                      and stops/exits automatically after <dur>
+                      (e.g. 30s, 5m, 3h). Press Ctrl+C to stop early.
 coffee status         Show the current sleep-prevention status.
 coffee --help         Show this help message.
 coffee --version      Show the installed version.
